@@ -1,3 +1,2 @@
-FROM php:8-apache
+FROM openjdk:17
 
-COPY src/ /var/www/html/
