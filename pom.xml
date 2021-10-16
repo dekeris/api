@@ -4,6 +4,7 @@
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <artifactId>api</artifactId>
   <build>
+    <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
 	<artifactId>maven-clean-plugin</artifactId>

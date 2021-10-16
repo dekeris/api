@@ -1,0 +1,30 @@
+name: Push to Docker Hub
+on: push
+jobs:
+  build_image:
+    name: Build the final image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: sudo apt-get install git buildah
+      - name: Clone the repository
+        run: git clone https://github.com/dekeris/api.git
+        working-directory: /tmp
+      - name: Extract the version name
+        id: extract-version
+        run: |
+          version=$(echo ${{ github.ref }} | cut -d / -f 3)
+          echo "::set-output name=version::$version"
+      - name: Checkout the version
+        if: ${{ steps.extract-version.outputs.version != 'main' }}
+        run: git checkout -b temporary_branch tags/${{ steps.extract-version.outputs.version }}
+        working-directory: /tmp/api
+      - name: Create image from Dockerfile
+        run: buildah bud -t docker.io/dekeris/api:${{ steps.extract-version.outputs.version }} .
+        working-directory: /tmp/api
+      - name: Login to Docker Hub
+        run: buildah login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }} docker.io
+      - name: Push image
+        run: buildah push docker.io/dekeris/api:${{ steps.extract-version.outputs.version }}
+      - name: Logout from Docker Hub
+        run: buildah logout docker.io
