@@ -10,6 +10,6 @@ public class Access {
     @POST
     @Path("/{name}")
     public void register(@PathParam("name") String name) {
-	System.out.println(name);
+	System.out.println(String.format("NAME = ", name));
     }
 }
